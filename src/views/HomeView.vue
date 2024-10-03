@@ -14,11 +14,15 @@ const cv = ref([]);
 const skills = ref([]);
 const intro = ref([{ title: "", paragraph: "", email: "", phone: "" }]);
 const loading = ref(true);
-console.log(loading.value);
+const isEnglish = ref(true);
 
 const loadCV = () => {
   loading.value = true;
-  Promise.all([cv_data_english, skills_english, intro_english])
+  const selectedData = isEnglish.value
+    ? [cv_data_english, skills_english, intro_english]
+    : [cv_data_spanish, skills_spanish, intro_spanish];
+
+  Promise.all(selectedData)
     .then(([cds, ss, is]) => {
       loading.value = false;
       cv.value = cds;
@@ -31,13 +35,21 @@ const loadCV = () => {
     });
 };
 
+const toggleLanguage = () => {
+  isEnglish.value = !isEnglish.value;
+  loadCV();
+};
+
 onBeforeMount(() => {
-  console.log("obm");
   loadCV();
 });
 </script>
 
 <template>
+  <button @click="toggleLanguage" class="language-toggle">
+    {{ isEnglish ? "EN" : "ES" }}
+  </button>
+
   <div class="spinner" :class="`${loading ? 'show' : 'hide'}`">
     <div id="nucleus"></div>
     <div id="orbit"></div>
@@ -54,58 +66,66 @@ onBeforeMount(() => {
       <ul class="onlyScreen">
         <li>
           <a href="javascript:if(window.print)window.print()"
-            >print <strong>PDF</strong></a
+            >{{ isEnglish ? "print" : "imprimir" }} <strong>PDF</strong></a
           >
         </li>
         <li>
           <a :href="`https://wa.me/${intro[0].phone}`" target="_blank"
-            >chat <strong>WA</strong></a
+            >{{ isEnglish ? "chat" : "chat" }} <strong>WA</strong></a
           >
         </li>
         <li>
           <a :href="`mailto:${intro[0].email}`" target="_blank"
-            >contact<strong>Email</strong></a
+            >{{ isEnglish ? "contact" : "contactar" }}<strong>Email</strong></a
           >
         </li>
       </ul>
     </header>
     <section>
-      <h3 class="banner">Work Experience</h3>
+      <h3 class="banner">
+        {{ isEnglish ? "Work Experience" : "Experiencia Laboral" }}
+      </h3>
       <InfoEntry
         v-for="(e, i) in cv.filter((e) => e.category == 'Exp')"
         :entry="e"
         :key="i"
       />
-      <h3 class="banner">Education</h3>
+      <h3 class="banner">{{ isEnglish ? "Education" : "Educación" }}</h3>
       <InfoEntry
         v-for="(e, i) in cv.filter((e) => e.category == 'Edu')"
         :entry="e"
         :key="i"
       />
-      <h3 class="banner">Entrepreneurship</h3>
+      <h3 class="banner">
+        {{ isEnglish ? "Entrepreneurship" : "Emprendimiento" }}
+      </h3>
       <InfoEntry
         v-for="(e, i) in cv.filter((e) => e.category == 'Emp')"
         :entry="e"
         :key="i"
       />
-      <h3 class="banner">Skills and Competences</h3>
+      <h3 class="banner">
+        {{
+          isEnglish ? "Skills and Competences" : "Habilidades y Competencias"
+        }}
+      </h3>
 
       <table>
         <tbody>
           <tr>
-            <th>Language</th>
-            <th>Level</th>
+            <th>{{ isEnglish ? "Language" : "Idioma" }}</th>
+            <th>{{ isEnglish ? "Level" : "Nivel" }}</th>
           </tr>
           <tr>
-            <td>Spanish</td>
-            <td>C2 (native)</td>
+            <td>{{ isEnglish ? "Spanish" : "Español" }}</td>
+            <td>C2 ({{ isEnglish ? "native" : "nativo" }})</td>
           </tr>
           <tr>
-            <td>English</td>
+            <td>{{ isEnglish ? "English" : "Inglés" }}</td>
             <td>C2</td>
           </tr>
           <tr>
-            <td>Italian</td>
+            <td>{{ isEnglish ? "Italian" : "Italiano" }}</td>
             <td>B1</td>
           </tr>
         </tbody>
@@ -120,19 +140,38 @@ onBeforeMount(() => {
         </div>
       </dl>
     </section>
-    <footer>
-      <!-- <p>
-        <small
-          >Alojado en
-          <a href="https://firebase.google.com/">Firebase</a> &mdash;
-          Desarrollado en <a href="https://vuejs.org/">Vue</a>
-        </small>
-      </p> -->
-    </footer>
+    <footer></footer>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.language-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  color: var(--color-text-dark);
+
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
 .wrapper {
   opacity: 0;
   transition: all 0.5s;
