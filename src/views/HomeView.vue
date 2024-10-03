@@ -1,27 +1,40 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
-import { cv_data } from "./../lib/cv";
+import {
+  cv_data_spanish,
+  skills_spanish,
+  intro_spanish,
+  cv_data_english,
+  skills_english,
+  intro_english,
+} from "./../lib/cv";
 import InfoEntry from "@/components/InfoEntry.vue";
 
 const cv = ref([]);
+const skills = ref([]);
+const intro = ref([{ title: "", paragraph: "", email: "", phone: "" }]);
 const loading = ref(true);
 console.log(loading.value);
 
+const loadCV = () => {
+  loading.value = true;
+  Promise.all([cv_data_english, skills_english, intro_english])
+    .then(([cds, ss, is]) => {
+      loading.value = false;
+      cv.value = cds;
+      skills.value = ss;
+      intro.value = is;
+    })
+    .catch((error) => {
+      console.error("Error loading data:", error);
+      loading.value = false;
+    });
+};
+
 onBeforeMount(() => {
   console.log("obm");
-  cv_data.then((res) => {
-    loading.value = false;
-    cv.value = res;
-  });
+  loadCV();
 });
-
-// Mi pasión por la educación, el diseño y la tecnologia se complementan,
-// creando un perfil versátil y comprometido con la innovación y el
-// desarrollo continuo. Poseo una sólida formación académica y una amplia
-// experiencia en el campo de la educación. Como Diseñador tengo una
-// perspectiva única en el desarrollo de proyectos creativos y funcionales.
-// Mi experiencia laboral ha fortalecido mi destreza en la implementación
-// de soluciones digitales y la enseñanza efectiva.
 </script>
 
 <template>
@@ -32,90 +45,89 @@ onBeforeMount(() => {
   </div>
   <div class="wrapper" :class="`${loading ? 'hide' : 'show'}`">
     <header>
-      <h1>Carlos Salgado</h1>
-      <p>
-        Mi pasión por la educación, el diseño y la tecnologia se complementan,
-        creando un perfil versátil y comprometido con la innovación y el
-        desarrollo continuo. Poseo una sólida formación académica y una amplia
-        experiencia en el campo de la educación y el diseño. Mi experiencia
-        laboral ha fortalecido mi destreza en la implementación de soluciones
-        digitales y la enseñanza efectiva.
+      <h1>Maria Paula Dangond Arteta</h1>
+      <p class="title">{{ intro[0].title }}</p>
+      <p class="paragraph">
+        {{ intro[0].paragraph }}
       </p>
+      <p class="email">{{ intro[0].email }}</p>
       <ul class="onlyScreen">
         <li>
           <a href="javascript:if(window.print)window.print()"
-            >imprimir <strong>PDF</strong></a
+            >print <strong>PDF</strong></a
           >
         </li>
         <li>
-          <a :href="`https://wa.me/${3155433505}`" target="_blank"
+          <a :href="`https://wa.me/${intro[0].phone}`" target="_blank"
             >chat <strong>WA</strong></a
           >
         </li>
         <li>
-          <a href="mailto:contacto@carsalhaz.com" target="_blank"
-            >contacto<strong>Email</strong></a
+          <a :href="`mailto:${intro[0].email}`" target="_blank"
+            >contact<strong>Email</strong></a
           >
         </li>
       </ul>
     </header>
     <section>
-      <h3 class="banner">Educación</h3>
-      <InfoEntry
-        v-for="(e, i) in cv.filter((e) => e.category == 'Edu')"
-        :entry="e"
-        :key="i"
-      />
-      <h3 class="banner">Experiencia Laboral</h3>
+      <h3 class="banner">Work Experience</h3>
       <InfoEntry
         v-for="(e, i) in cv.filter((e) => e.category == 'Exp')"
         :entry="e"
         :key="i"
       />
-      <h3 class="banner">Habilidades y Competencias</h3>
+      <h3 class="banner">Education</h3>
+      <InfoEntry
+        v-for="(e, i) in cv.filter((e) => e.category == 'Edu')"
+        :entry="e"
+        :key="i"
+      />
+      <h3 class="banner">Entrepreneurship</h3>
+      <InfoEntry
+        v-for="(e, i) in cv.filter((e) => e.category == 'Emp')"
+        :entry="e"
+        :key="i"
+      />
+      <h3 class="banner">Skills and Competences</h3>
 
       <table>
         <tbody>
           <tr>
-            <th>Idioma</th>
-            <th>Nivel</th>
+            <th>Language</th>
+            <th>Level</th>
           </tr>
           <tr>
-            <td>Ingles</td>
+            <td>Spanish</td>
+            <td>C2 (native)</td>
+          </tr>
+          <tr>
+            <td>English</td>
             <td>C2</td>
           </tr>
           <tr>
-            <td>Frances</td>
+            <td>Italian</td>
             <td>B1</td>
           </tr>
         </tbody>
       </table>
 
       <dl>
-        <dt>Habilidades Organizacionales</dt>
-        <dd>
-          He asumido posiciones de liderazgo, guiado por mi creencia en que el
-          liderazgo es una forma de servicio que fortalece grupos, cultiva
-          relaciones y fomenta un entorno de trabajo productivo y saludable.
-        </dd>
-        <dt>Habilidades Sociales y de Comunicación</dt>
-        <dd>
-          Fui seleccionado como representante estudiantil tanto en mis estudios
-          de pregrado como de posgrado, desempeñando un papel fundamental al
-          unir a los estudiantes y actuar como su voz ante los consejos
-          académicos. Mi enfoque principal era facilitar una comunicación
-          bidireccional efectiva.
-        </dd>
+        <div v-for="skill in skills" :key="skill.skill">
+          <dt>{{ skill.skill }}</dt>
+          <dd>
+            {{ skill.description }}
+          </dd>
+        </div>
       </dl>
     </section>
     <footer>
-      <p>
+      <!-- <p>
         <small
           >Alojado en
           <a href="https://firebase.google.com/">Firebase</a> &mdash;
           Desarrollado en <a href="https://vuejs.org/">Vue</a>
         </small>
-      </p>
+      </p> -->
     </footer>
   </div>
 </template>
@@ -170,6 +182,16 @@ $electron-width: $spinner-width * 0.15;
     (($spinner-width - $orbit-width) / 2) - (($electron-width - 2px) / 2)
   );
   top: calc(($spinner-width - $electron-width) / 2);
+}
+
+.title {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.paragraph {
+  text-align: justify;
 }
 
 @keyframes spin {

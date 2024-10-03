@@ -1,15 +1,16 @@
 import * as Papa from "papaparse";
 
 const cv_url =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRMS1vyf6xcxPBBE0j7_inglkQVo7EFodBxWRNM1BI6PLATEk3jjO25Enjkde4hqAcZvd8tu9LGrvL/pub?output=csv";
+  "https://docs.google.com/spreadsheets/d/1c-IcPlksnbt2WXM25x4Kjys3yjAd6AX9avt_l18UdaY/pub?gid=0&single=true&output=csv";
 
-const parseData = () => {
+const getCvData = (url) => {
   let data = [];
   return new Promise((resolve) => {
-    Papa.parse(cv_url, {
+    Papa.parse(url, {
       download: true,
       header: true,
       complete: (results) => {
+        console.log("getCvData", results);
         data = results.data.filter((e) => e.description != "");
         for (let i = 0; i < data.length; i++) {
           const element = data[i];
@@ -17,66 +18,47 @@ const parseData = () => {
           element.bullets = element.bullets
             .split("\n")
             .map((e) => e.split("**"));
-          console.log(element.bullets);
+          // console.log(element.bullets);
         }
-        // console.log(data);
+        //console.log(data);
         resolve(data);
       },
     });
   });
 };
 
-const members_url =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRRmDmlVnTE5B2MQ6n76icC-UJwP20sOdJ_WM-EQVjrLcJuTwSmMqyWR0pkui4YJTSxvW9U52Nnfw_X/pub?gid=0&single=true&output=csv";
-const getMembers = () => {
+const getData = (url) => {
   let data = [];
   return new Promise((resolve) => {
-    Papa.parse(members_url, {
+    Papa.parse(url, {
       download: true,
       header: true,
       complete: (results) => {
-        data = results.data;
-        // console.log(data);
+        console.log("getData", results);
+        data = results.data.filter((e) => e.description != "");
+
+        //console.log(data);
         resolve(data);
       },
     });
   });
 };
 
-const orders_url =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRRmDmlVnTE5B2MQ6n76icC-UJwP20sOdJ_WM-EQVjrLcJuTwSmMqyWR0pkui4YJTSxvW9U52Nnfw_X/pub?gid=1607532012&single=true&output=csv";
-const getOrders = () => {
-  let data = [];
-  return new Promise((resolve) => {
-    Papa.parse(orders_url, {
-      download: true,
-      header: true,
-      complete: (results) => {
-        data = results.data;
-        // console.log(data);
-        resolve(data);
-      },
-    });
-  });
-};
-
-const products_url =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRRmDmlVnTE5B2MQ6n76icC-UJwP20sOdJ_WM-EQVjrLcJuTwSmMqyWR0pkui4YJTSxvW9U52Nnfw_X/pub?gid=1511137527&single=true&output=csv";
-const getProducts = () => {
-  let data = [];
-  return new Promise((resolve) => {
-    Papa.parse(products_url, {
-      download: true,
-      header: true,
-      complete: (results) => {
-        data = results.data;
-        // console.log(data);
-        resolve(data);
-      },
-    });
-  });
-};
-export const cv_data = parseData();
-export const members = getMembers();
-export const orders = getOrders();
-export const products = getProducts();
+export const cv_data_spanish = getCvData(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd1b-iZ6Mlirbnt9dh75bkLcrie0-5BAdku84p5CYwPxUX7igHc-HGlTQiz6KGRpMqDjJAguddkKbB/pub?gid=0&single=true&output=csv"
+);
+export const cv_data_english = getCvData(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd1b-iZ6Mlirbnt9dh75bkLcrie0-5BAdku84p5CYwPxUX7igHc-HGlTQiz6KGRpMqDjJAguddkKbB/pub?gid=1911678839&single=true&output=csv"
+);
+export const skills_spanish = getData(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd1b-iZ6Mlirbnt9dh75bkLcrie0-5BAdku84p5CYwPxUX7igHc-HGlTQiz6KGRpMqDjJAguddkKbB/pub?gid=1080873736&single=true&output=csv"
+);
+export const skills_english = getData(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd1b-iZ6Mlirbnt9dh75bkLcrie0-5BAdku84p5CYwPxUX7igHc-HGlTQiz6KGRpMqDjJAguddkKbB/pub?gid=1546273566&single=true&output=csv"
+);
+export const intro_spanish = getData(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd1b-iZ6Mlirbnt9dh75bkLcrie0-5BAdku84p5CYwPxUX7igHc-HGlTQiz6KGRpMqDjJAguddkKbB/pub?gid=1685940129&single=true&output=csv"
+);
+export const intro_english = getData(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd1b-iZ6Mlirbnt9dh75bkLcrie0-5BAdku84p5CYwPxUX7igHc-HGlTQiz6KGRpMqDjJAguddkKbB/pub?gid=1240590975&single=true&output=csv"
+);
