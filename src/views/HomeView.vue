@@ -249,4 +249,10 @@ $electron-width: $spinner-width * 0.15;
 .hide {
   opacity: 0;
 }
+
+@media print {
+  .language-toggle {
+    display: none;
+  }
+}
 </style>
